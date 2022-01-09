@@ -9,6 +9,10 @@ client.on('error', function (err) {
 
 const fileInput = document.querySelector("#file");
 file.addEventListener('change', (e) => {
+
+	updateFileStatus("");
+	updateTransferSpeed("");
+
 	const file = e.target.files[0];
 	const { name: fileName, size } = file;
 	const fileSize = formatBytes(size);
@@ -65,6 +69,8 @@ socket.on("done-downloading", torrent => {
 socket.on("file-link", fileLink => {
 	sendBtn.disabled = true;
 	console.log("Received: ", fileLink);
+	updateFileStatus("");
+	updateTransferSpeed("");
 	disableSelectFile();
 	updateFileStatus("Received magnet link...");
 	client.add(fileLink, function (torrent) {

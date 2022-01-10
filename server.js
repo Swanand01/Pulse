@@ -26,12 +26,12 @@ io.on("connection", socket => {
 			socket.broadcast.to(roomId).emit("user-disconnected", userId);
 		})
 
-		socket.on("file-link", (fileLink) => {
-			socket.broadcast.to(roomId).emit("file-link", fileLink);
+		socket.on("file-link", (fileLink, senderId) => {
+			socket.broadcast.to(roomId).emit("file-link", fileLink, senderId);
 		})
 
-		socket.on("done-downloading", (torrent) => {
-			socket.broadcast.to(roomId).emit("done-downloading", torrent);
+		socket.on("done-downloading", senderId => {
+			io.to(senderId).emit("done-downloading");
 		})
 
 		socket.on("connection-established", (userId) => {

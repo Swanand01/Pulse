@@ -2,6 +2,7 @@ const socket = io("/");
 
 var client = new WebTorrent()
 let torrentBeingSent;
+let numPeers = 1;
 
 client.on('error', function (err) {
 	console.log(err);
@@ -37,7 +38,7 @@ sendBtn.addEventListener("click", () => {
 		torrentBeingSent = torrent;
 		console.log('Seeding ' + file.name)
 		id = torrent.magnetURI;
-		socket.emit("file-link", id)
+		socket.emit("file-link", id, socket.id)
 		torrent.on('upload', function (bytes) {
 			updateFileStatus("Sending " + file.name + ": " + Math.round((torrent.uploaded / torrent.length) * 100) + "%");
 			updateTransferSpeed("Upload speed: " + formatBytes(torrent.uploadSpeed) + "/s")
@@ -50,23 +51,25 @@ sendBtn.addEventListener("click", () => {
 
 
 socket.on('connect', function () {
-	socket.emit("join-room", ROOM_ID, "babu")
+	socket.emit("join-room", ROOM_ID, socket.id)
 });
 
 socket.on("user-disconnected", userId => {
+	numPeers -= 1;
 	console.log(userId + " left.");
-	reset();
+	if (numPeers == 0){
+		reset();
+	}
 })
 
-socket.on("done-downloading", torrent => {
+socket.on("done-downloading", () => {
+	console.log("Receieved done downloading");
 	enableSelectFile();
-	console.log("Deleting torrent...");
-	client.remove(torrent);
 	sendBtn.disabled = false;
 	updateFileStatus("File sent...")
 })
 
-socket.on("file-link", fileLink => {
+socket.on("file-link", (fileLink, senderId) => {
 	sendBtn.disabled = true;
 	console.log("Received: ", fileLink);
 	updateFileStatus("");
@@ -79,23 +82,20 @@ socket.on("file-link", fileLink => {
 			console.log('progress: ' + torrent.progress * 100);
 			updateFileStatus("Receiving file: " + Math.round(torrent.progress * 100) + "%");
 			updateTransferSpeed("Download speed: " + formatBytes(torrent.downloadSpeed) + "/s");
-			if (torrent.done) {
-				console.log("Done downloading");
-				updateFileStatus("File received! Generating your download...")
+		})
+		torrent.on('done', () => {
+			console.log("Done downloading");
+			updateFileStatus("File received! Generating your download...")
 
+			sendBtn.disabled = false;
+			enableSelectFile();
+			socket.emit("done-downloading", senderId);
+
+			var file = torrent.files[0]
+			file.getBlob(function callback(err, blob) {
+				download(blob, file.name)
 				sendBtn.disabled = false;
-				enableSelectFile();
-
-				socket.emit("done-downloading", fileLink)
-
-				var file = torrent.files[0]
-				file.getBlob(function callback(err, blob) {
-					download(blob, file.name)
-					client.remove(torrent);
-					sendBtn.disabled = false;
-				})
-
-			}
+			})
 		})
 		torrent.on('error', function (err) {
 			console.log(err);
@@ -105,6 +105,7 @@ socket.on("file-link", fileLink => {
 
 socket.on('user-connected', userId => {
 	updateConnectionStatus("Connection established...");
+	numPeers += 1;
 	sendBtn.disabled = false;
 	socket.emit("connection-established", userId);
 	console.log("New user connected: " + userId);

@@ -57,7 +57,7 @@ socket.on('connect', function () {
 socket.on("user-disconnected", userId => {
 	numPeers -= 1;
 	console.log(userId + " left.");
-	if (numPeers == 0){
+	if (numPeers == 1){
 		reset();
 	}
 })

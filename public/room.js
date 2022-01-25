@@ -9,7 +9,7 @@ client.on('error', function (err) {
 })
 
 const fileInput = document.querySelector("#file");
-file.addEventListener('change', (e) => {
+fileInput.addEventListener('change', (e) => {
 
 	updateFileStatus("");
 	updateTransferSpeed("");
@@ -36,7 +36,6 @@ sendBtn.addEventListener("click", () => {
 	let id;
 	client.seed(file, function (torrent) {
 		torrentBeingSent = torrent;
-		console.log('Seeding ' + file.name)
 		id = torrent.magnetURI;
 		socket.emit("file-link", id, socket.id)
 		torrent.on('upload', function (bytes) {
@@ -56,14 +55,12 @@ socket.on('connect', function () {
 
 socket.on("user-disconnected", userId => {
 	numPeers -= 1;
-	console.log(userId + " left.");
-	if (numPeers == 1){
+	if (numPeers === 1) {
 		reset();
 	}
 })
 
 socket.on("done-downloading", () => {
-	console.log("Receieved done downloading");
 	enableSelectFile();
 	sendBtn.disabled = false;
 	updateFileStatus("File sent...")
@@ -71,7 +68,6 @@ socket.on("done-downloading", () => {
 
 socket.on("file-link", (fileLink, senderId) => {
 	sendBtn.disabled = true;
-	console.log("Received: ", fileLink);
 	updateFileStatus("");
 	updateTransferSpeed("");
 	disableSelectFile();
@@ -79,12 +75,10 @@ socket.on("file-link", (fileLink, senderId) => {
 	client.add(fileLink, function (torrent) {
 		torrentBeingSent = torrent;
 		torrent.on('download', function (bytes) {
-			console.log('progress: ' + torrent.progress * 100);
 			updateFileStatus("Receiving file: " + Math.round(torrent.progress * 100) + "%");
 			updateTransferSpeed("Download speed: " + formatBytes(torrent.downloadSpeed) + "/s");
 		})
 		torrent.on('done', () => {
-			console.log("Done downloading");
 			updateFileStatus("File received! Generating your download...")
 
 			sendBtn.disabled = false;
@@ -108,11 +102,11 @@ socket.on('user-connected', userId => {
 	numPeers += 1;
 	sendBtn.disabled = false;
 	socket.emit("connection-established", userId);
-	console.log("New user connected: " + userId);
 })
 
 socket.on('connection-established', userId => {
 	updateConnectionStatus("Connection established...");
+	numPeers += 1;
 	sendBtn.disabled = false;
 })
 
@@ -145,7 +139,6 @@ function formatBytes(bytes, decimals = 2) {
 }
 
 function reset() {
-	console.log("Resetting...");
 	if (torrentBeingSent) torrentBeingSent.destroy();
 	torrentBeingSent = "";
 	updateConnectionStatus("Waiting for connection...");

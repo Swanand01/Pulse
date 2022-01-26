@@ -23,9 +23,6 @@ PeerShare primarily uses WebTorrent to transfer files between multiple devices, 
 - Start sharing files!
 
 
-## Demo
-![](https://github.com/Swanand01/PeerShare/blob/master/demo.mp4)
-
 ## Tech Stack
 
 **Server:** Node, Express, SocketIO, WebTorrent

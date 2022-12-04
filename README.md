@@ -17,7 +17,7 @@ PeerShare primarily uses WebTorrent to transfer files between multiple devices, 
 
 ## Try it!
 
-- Head over to the PeerShare website [here.](https://peer-share-app.herokuapp.com/)
+- Head over to the PeerShare website [here.](https://peershare-app.onrender.com/)
 - Share the link of the page to the other peer.
 - A connection will be established once the other peer opens the link.
 - Start sharing files!

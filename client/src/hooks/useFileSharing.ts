@@ -94,6 +94,12 @@ export function useFileSharing({
   }, []);
 
   useEffect(() => {
+    webtorrent.on("error", (error: any) => {
+      console.error("WebTorrent client error:", error);
+    });
+  }, [webtorrent]);
+
+  useEffect(() => {
     if (!socket || !roomId) return;
 
     const handleConnect = () => {

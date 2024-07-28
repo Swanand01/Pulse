@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "install": "npm install --prefix client && npm install --prefix server",
-    "dev": "concurrently \"npm start --prefix client\" \"npm start --prefix server\"",
+    "dev": "concurrently \"npm start --prefix client\" \"npm run dev --prefix server\"",
     "build": "npm run build --prefix client",
-    "start": "npm run build && node server/index.js"
+    "start": "node server/index.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

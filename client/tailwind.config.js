@@ -100,7 +100,7 @@ module.exports = {
   plugins: [
     plugin(function ({ addBase }) {
       addBase({
-        html: { fontSize: "14px" },
+        html: { fontSize: "15px" },
         "@screen sm": { html: { fontSize: "15px" } },
         "@screen md": { html: { fontSize: "16px" } },
         "@screen lg": { html: { fontSize: "17px" } },

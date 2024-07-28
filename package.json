@@ -1,21 +1,14 @@
 {
-  "name": "PeerShare",
+  "name": "pulse",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "devStart": "nodemon server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "ejs": "^3.1.6",
-    "express": "^4.17.2",
-    "socket.io": "^4.4.1",
-    "uuid": "^8.3.2"
+    "install": "npm install --prefix client && npm install --prefix server",
+    "dev": "concurrently \"npm start --prefix client\" \"npm start --prefix server\"",
+    "client:build": "npm run build --prefix client",
+    "start": "npm run client:build && node server/index.js"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "concurrently": "^8.2.2"
   }
 }

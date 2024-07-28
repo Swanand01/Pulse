@@ -1,0 +1,14 @@
+{
+  "name": "pulse",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install": "npm install --prefix client && npm install --prefix server",
+    "dev": "concurrently \"npm start --prefix client\" \"npm start --prefix server\"",
+    "client:build": "npm run build --prefix client",
+    "start": "npm run client:build && node server/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

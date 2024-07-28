@@ -1,6 +1,11 @@
+import path from "path";
 import http from "http";
 import express from "express";
 import { Server } from "socket.io";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.Server(app);
@@ -10,6 +15,8 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+const PORT = process.env.PORT || 3001;
 
 app.set("view engine", "ejs");
 
@@ -36,6 +43,12 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3001, () => {
-  console.log("Server listening on port 3001");
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+});
+
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });

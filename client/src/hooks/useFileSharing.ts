@@ -80,7 +80,12 @@ export function useFileSharing({
   }, [downloadData]);
 
   useEffect(() => {
-    const socket = io(process.env.WEB_APP_URL || "http://localhost:3001");
+    const SOCKET_URL =
+      process.env.NODE_ENV === "production"
+        ? window.location.origin
+        : "http://localhost:3001";
+
+    const socket = io(SOCKET_URL);
     setSocket(socket);
 
     return () => {

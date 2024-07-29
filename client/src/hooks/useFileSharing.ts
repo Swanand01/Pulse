@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 // @ts-ignore
 import WebTorrent from "webtorrent/dist/webtorrent.min.js";
-import { download, formatBytes, isChrome } from "../lib/utils";
+import { download, formatBytes } from "../lib/utils";
+import { WEBTORRENT_CONFIG } from "@/lib/constants";
 
 interface UseFileSharingProps {
   roomId: string;
@@ -19,38 +20,11 @@ interface UseFileSharingReturn {
   handleDownload: () => void;
 }
 
-const TRACKERS = [
-  "wss://tracker.btorrent.xyz",
-  "wss://tracker.openwebtorrent.com",
-  "wss://tracker.webtorrent.dev",
-];
-
-const ICE_SERVERS = [
-  isChrome()
-    ? { url: "stun:68.183.83.122:3478" }
-    : { urls: "stun:68.183.83.122:3478" },
-  {
-    urls: "turn:68.183.83.122:3478",
-    username: "pulse",
-    credential: "pulsepassword",
-  },
-];
-
 export function useFileSharing({
   roomId,
 }: UseFileSharingProps): UseFileSharingReturn {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [webtorrent] = useState(
-    () =>
-      new WebTorrent({
-        tracker: {
-          announce: TRACKERS,
-          rtcConfig: {
-            iceServers: ICE_SERVERS,
-          },
-        },
-      }),
-  );
+  const [webtorrent] = useState(() => new WebTorrent(WEBTORRENT_CONFIG));
   const [connectionStatus, setConnectionStatus] = useState(
     "Waiting for connection.",
   );
@@ -62,6 +36,30 @@ export function useFileSharing({
   const [downloadData, setDownloadData] = useState<{
     file: WebTorrent.File;
   } | null>(null);
+
+  const onFileUploadComplete = () => {
+    setConnectionStatus("File sent.");
+    setTransferSpeed("0 kB/s");
+  };
+
+  const onFileDownloadComplete = () => {
+    setConnectionStatus("File received! Generating your download.");
+    setTransferSpeed("0 kB/s");
+  };
+
+  const onUploadingFile = (
+    filename: string,
+    progress: number,
+    uploadSpeed: string,
+  ) => {
+    setConnectionStatus(`Sending ${filename}: ${progress}%`);
+    setTransferSpeed(uploadSpeed);
+  };
+
+  const onDownloadingFile = (progress: number, downloadSpeed: string) => {
+    setConnectionStatus(`Receiving file: ${progress}%`);
+    setTransferSpeed(downloadSpeed);
+  };
 
   const reset = useCallback(() => {
     if (torrentBeingSent) {
@@ -83,10 +81,17 @@ export function useFileSharing({
         socket.emit("file-link", torrent.magnetURI, socket.id);
 
         torrent.on("upload", () => {
-          setConnectionStatus(
-            `Sending ${fileToSend.name}: ${Math.round((torrent.uploaded / torrent.length) * 100)}%`,
+          const progress = Math.round(
+            (torrent.uploaded / torrent.length) * 100,
           );
-          setTransferSpeed(`${formatBytes(torrent.uploadSpeed)}/s`);
+          const uploadSpeed = `${formatBytes(torrent.uploadSpeed)}/s`;
+
+          if (progress >= 100) {
+            onFileUploadComplete();
+            return;
+          }
+
+          onUploadingFile(fileToSend.name, progress, uploadSpeed);
         });
 
         torrent.on("error", (error: Error) => {
@@ -156,15 +161,19 @@ export function useFileSharing({
         setTorrentBeingSent(torrent);
 
         torrent.on("download", () => {
-          setConnectionStatus(
-            `Receiving file: ${Math.round(torrent.progress * 100)}%`,
-          );
-          setTransferSpeed(`${formatBytes(torrent.downloadSpeed)}/s`);
+          const progress = Math.round(torrent.progress * 100);
+          const downloadSpeed = `${formatBytes(torrent.downloadSpeed)}/s`;
+
+          if (progress >= 100) {
+            onFileDownloadComplete();
+            return;
+          }
+
+          onDownloadingFile(progress, downloadSpeed);
         });
 
         torrent.on("done", async () => {
-          setConnectionStatus("File received! Generating your download.");
-          setTransferSpeed("0 kB/s");
+          onFileDownloadComplete();
 
           try {
             const file = torrent.files[0];
@@ -184,8 +193,7 @@ export function useFileSharing({
     };
 
     const handleDoneDownloading = () => {
-      setConnectionStatus("File sent.");
-      setTransferSpeed("0 kB/s");
+      onFileUploadComplete();
     };
 
     const handleUserDisconnected = () => {

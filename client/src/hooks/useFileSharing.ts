@@ -19,11 +19,36 @@ interface UseFileSharingReturn {
   handleDownload: () => void;
 }
 
+const TRACKERS = [
+  "wss://tracker.btorrent.xyz",
+  "wss://tracker.openwebtorrent.com",
+  "wss://tracker.webtorrent.dev",
+];
+
+const ICE_SERVERS = [
+  {
+    urls: "stun:stun.l.google.com:19305",
+  },
+  {
+    urls: "stun:stun1.l.google.com:19305",
+  },
+];
+
 export function useFileSharing({
   roomId,
 }: UseFileSharingProps): UseFileSharingReturn {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [webtorrent] = useState(() => new WebTorrent());
+  const [webtorrent] = useState(
+    () =>
+      new WebTorrent({
+        tracker: {
+          announce: TRACKERS,
+          rtcConfig: {
+            iceServers: ICE_SERVERS,
+          },
+        },
+      }),
+  );
   const [connectionStatus, setConnectionStatus] = useState(
     "Waiting for connection.",
   );

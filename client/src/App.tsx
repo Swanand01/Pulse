@@ -6,7 +6,7 @@ import Room from "./components/routes/Room";
 
 function App() {
   return (
-    <div className="bg-background flex min-h-screen flex-col antialiased w-full">
+    <div className="bg-background flex min-h-svh flex-col antialiased w-full">
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />

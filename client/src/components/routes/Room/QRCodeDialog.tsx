@@ -22,7 +22,7 @@ export default function QRCodeDialog({ link }: QRCodeDialogProps) {
           <QrCode className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-fit">
+      <DialogContent className="w-fit rounded-lg">
         <DialogHeader>
           <DialogTitle>Room QR code</DialogTitle>
           <DialogDescription className="prose dark:prose-invert">

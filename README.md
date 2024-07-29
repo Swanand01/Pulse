@@ -16,7 +16,7 @@ Pulse primarily uses WebTorrent to transfer files between multiple devices, and 
 
 ## Try it!
 
-- Head over to the Pulse website [here.](https://Pulse-app.onrender.com/)
+- Head over to the Pulse website [here.]([https://Pulse-app.onrender.com/](https://pulse-zmn77.ondigitalocean.app/))
 - Share the link of the page to the other peer.
 - A connection will be established once the other peer opens the link.
 - Start sharing files!

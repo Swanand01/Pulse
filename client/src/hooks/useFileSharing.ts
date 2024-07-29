@@ -31,8 +31,8 @@ const ICE_SERVERS = [
     : { urls: "stun:68.183.83.122:3478" },
   {
     urls: "turn:68.183.83.122:3478",
-    username: process.env.REACT_APP_TURN_USERNAME,
-    credential: process.env.REACT_APP_TURN_PASSWORD,
+    username: "pulse",
+    credential: "pulsepassword",
   },
 ];
 

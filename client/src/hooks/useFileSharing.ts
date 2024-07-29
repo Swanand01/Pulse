@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 // @ts-ignore
 import WebTorrent from "webtorrent/dist/webtorrent.min.js";
-import { download, formatBytes } from "../lib/utils";
+import { download, formatBytes, isChrome } from "../lib/utils";
 
 interface UseFileSharingProps {
   roomId: string;
@@ -26,11 +26,13 @@ const TRACKERS = [
 ];
 
 const ICE_SERVERS = [
+  isChrome()
+    ? { url: "stun:68.183.83.122:3478" }
+    : { urls: "stun:68.183.83.122:3478" },
   {
-    urls: "stun:stun.l.google.com:19305",
-  },
-  {
-    urls: "stun:stun1.l.google.com:19305",
+    urls: "turn:68.183.83.122:3478",
+    username: process.env.REACT_APP_TURN_USERNAME,
+    credential: process.env.REACT_APP_TURN_PASSWORD,
   },
 ];
 

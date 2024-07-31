@@ -22,7 +22,7 @@ export default function ShareLink() {
   return (
     <Alert>
       <AlertDescription>
-        <p className="prose dark:prose-invert mb-2 text-sm text-muted-foreground">
+        <p className="prose prose-invert mb-2 text-sm">
           Share this link to devices you want to share files with
         </p>
         <div className="flex space-x-2">

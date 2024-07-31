@@ -25,16 +25,12 @@ export default function FileCard({ sendFile }: FileCardProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader className="prose dark:prose-invert p-4">
+      <CardHeader className="prose prose-invert p-4">
         <CardTitle>Send a File</CardTitle>
       </CardHeader>
       <CardContent className="flex gap-2 p-4 pt-0">
         <Input type="file" name="file" onChange={handleFileChange} />
-        <Button
-          variant="default"
-          onClick={handleSendFile}
-          disabled={!selectedFile}
-        >
+        <Button onClick={handleSendFile} disabled={!selectedFile}>
           Send
         </Button>
       </CardContent>

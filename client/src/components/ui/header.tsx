@@ -10,10 +10,10 @@ export default function Header({ className }: HeaderProps) {
     <nav
       className={cn(
         "flex justify-between border-b items-center px-8 py-2",
-        className
+        className,
       )}
     >
-      <Link to="/" className="prose dark:prose-invert flex gap-x-4">
+      <Link to="/" className="prose prose-invert flex gap-x-4">
         <h2 className="mt-0">Pulse.</h2>
       </Link>
     </nav>

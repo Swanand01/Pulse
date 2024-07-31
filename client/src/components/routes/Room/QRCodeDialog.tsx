@@ -18,14 +18,14 @@ export default function QRCodeDialog({ link }: QRCodeDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button>
           <QrCode className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="w-fit rounded-lg">
         <DialogHeader>
           <DialogTitle>Room QR code</DialogTitle>
-          <DialogDescription className="prose dark:prose-invert">
+          <DialogDescription className="prose prose-invert">
             Scan the QR code to join this room.
           </DialogDescription>
         </DialogHeader>

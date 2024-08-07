@@ -25,9 +25,7 @@ export function useFileSharing({
 }: UseFileSharingProps): UseFileSharingReturn {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [webtorrent] = useState(() => new WebTorrent(WEBTORRENT_CONFIG));
-  const [connectionStatus, setConnectionStatus] = useState(
-    "Waiting for connection.",
-  );
+  const [connectionStatus, setConnectionStatus] = useState("");
   const [numberOfPeers, setNumberOfPeers] = useState(1);
   const [torrentBeingSent, setTorrentBeingSent] =
     useState<WebTorrent.Torrent | null>(null);
@@ -66,7 +64,7 @@ export function useFileSharing({
       torrentBeingSent.destroy();
       setTorrentBeingSent(null);
     }
-    setConnectionStatus("Waiting for connection.");
+    setConnectionStatus("");
     setTransferSpeed("0 kB/s");
   }, [torrentBeingSent]);
 

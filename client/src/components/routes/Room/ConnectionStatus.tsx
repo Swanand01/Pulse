@@ -9,8 +9,8 @@ export default function ConnectionStatus({
 }: ConnectionStatusProps) {
   return (
     <div className="flex gap-4 justify-center items-center prose prose-invert">
-      <Zap height={20} width={20} />
-      <p className="mt-0">{connectionStatus}</p>
+      <Zap height={20} width={20} className="text-primary" />
+      <p className="mt-0 text-primary">{connectionStatus}</p>
     </div>
   );
 }

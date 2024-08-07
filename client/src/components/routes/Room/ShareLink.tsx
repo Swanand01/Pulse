@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Check, Copy } from "lucide-react";
 import QRCodeDialog from "./QRCodeDialog";
+import { cn } from "@/lib/utils";
 
-export default function ShareLink() {
+interface ShareLinkProps {
+  className?: string;
+}
+
+export default function ShareLink({ className }: ShareLinkProps) {
   const [copied, setCopied] = useState(false);
   const currentLink = window.location.href;
 
@@ -20,7 +25,7 @@ export default function ShareLink() {
   };
 
   return (
-    <Alert>
+    <Alert className={cn("", className)}>
       <AlertDescription>
         <p className="prose prose-invert mb-2 text-sm">
           Share this link to devices you want to share files with

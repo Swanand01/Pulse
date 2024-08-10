@@ -20,25 +20,38 @@ const PORT = process.env.PORT || 3001;
 
 app.set("view engine", "ejs");
 
+const rooms = {};
 io.on("connection", (socket) => {
-  socket.on("join-room", (roomId, userId) => {
+  socket.on("join-room", (roomId, username, userId) => {
+    if (rooms[roomId] && rooms[roomId].includes(username)) {
+      io.to(userId).emit("username-taken");
+      return;
+    }
+
     socket.join(roomId);
-    socket.broadcast.to(roomId).emit("user-connected", userId);
+    rooms[roomId] = [...(rooms[roomId] || []), username];
+    socket.broadcast.to(roomId).emit("user-connected", username);
 
     socket.on("disconnect", () => {
-      socket.broadcast.to(roomId).emit("user-disconnected", userId);
+      const users = rooms[roomId] || [];
+      const index = users.indexOf(username);
+      if (users.indexOf(username) > -1) {
+        users.splice(index, 1);
+      }
+      rooms[roomId] = users;
+      socket.broadcast.to(roomId).emit("user-disconnected", username);
     });
 
     socket.on("file-link", (fileLink, senderId) => {
       socket.broadcast.to(roomId).emit("file-link", fileLink, senderId);
     });
 
-    socket.on("done-downloading", (senderId, fileLink) => {
-      io.to(senderId).emit("done-downloading", fileLink);
+    socket.on("done-downloading", (senderId) => {
+      io.to(senderId).emit("done-downloading");
     });
 
-    socket.on("connection-established", (userId) => {
-      socket.broadcast.to(roomId).emit("connection-established", userId);
+    socket.on("connection-established", () => {
+      socket.broadcast.to(roomId).emit("connection-established", username);
     });
   });
 });

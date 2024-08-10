@@ -1,28 +1,35 @@
 import { useParams } from "react-router-dom";
-import { useFileSharing } from "../../../hooks/useFileSharing";
+import { useFileSharing } from "@/hooks/useFileSharing";
 import ShareLink from "./ShareLink";
 import DownloadDialog from "./DownloadDialog";
 import SendFileButton from "./SendFileButton";
 import RoomInfo from "./RoomInfo";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import UsernameTakenDialog from "./UsernameTakenDialog";
 
 export default function Room() {
   const { roomId } = useParams<{ roomId: string }>();
+  const [username] = useLocalStorage("username", "");
+
   const {
     connectionStatus,
-    numberOfPeers,
     transferSpeed,
     sendFile,
     showDownloadDialog,
     setShowDownloadDialog,
+    showUsernameTakenDialog,
     downloadData,
     handleDownload,
-  } = useFileSharing({ roomId: roomId || "" });
+    peers,
+  } = useFileSharing({ roomId: roomId || "", username });
 
   return (
     <div className="w-full px-8 sm:w-96 sm:px-0 m-auto space-y-8">
+      {username}
+      <br />
+      peers:{peers}
       <RoomInfo
         connectionStatus={connectionStatus}
-        numberOfPeers={numberOfPeers}
         transferSpeed={transferSpeed}
         className={connectionStatus === "" ? "hidden" : "block"}
       />
@@ -43,6 +50,13 @@ export default function Room() {
           setOpen={setShowDownloadDialog}
           filename={downloadData?.file.name}
           onClickDownload={handleDownload}
+        />
+      )}
+      {showUsernameTakenDialog && (
+        <UsernameTakenDialog
+          open={showUsernameTakenDialog}
+          username={username}
+          roomId={roomId || ""}
         />
       )}
     </div>

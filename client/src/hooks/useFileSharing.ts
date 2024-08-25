@@ -37,7 +37,7 @@ export function useFileSharing({
   const [downloadData, setDownloadData] = useState<{
     file: WebTorrent.File;
   } | null>(null);
-  const [peers, setPeers] = useState([""]);
+  const [peers, setPeers] = useState<string[]>([]);
 
   const onUserConnected = (username: string) => {
     setPeers((peers) => Array.from(new Set([...peers, username])));
@@ -207,6 +207,7 @@ export function useFileSharing({
         peers.splice(index, 1);
         setPeers([...peers]);
       }
+      reset();
     };
 
     const handleUsernameTaken = () => {

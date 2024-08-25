@@ -10,7 +10,7 @@ export default function Header({ className }: HeaderProps) {
   return (
     <nav
       className={cn(
-        "flex justify-between border-b items-center px-8 py-2",
+        "flex justify-between border-b items-center px-8 py-2 snap-start",
         className,
       )}
     >

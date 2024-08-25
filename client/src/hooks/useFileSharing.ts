@@ -7,33 +7,42 @@ import { WEBTORRENT_CONFIG } from "@/lib/constants";
 
 interface UseFileSharingProps {
   roomId: string;
+  username: string;
 }
 
 interface UseFileSharingReturn {
   connectionStatus: string;
-  numberOfPeers: number;
   transferSpeed: string;
   sendFile: (file: File) => void;
   showDownloadDialog: boolean;
   setShowDownloadDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  showUsernameTakenDialog: boolean;
   downloadData: { file: WebTorrent.File } | null;
   handleDownload: () => void;
+  peers: string[];
 }
 
 export function useFileSharing({
   roomId,
+  username,
 }: UseFileSharingProps): UseFileSharingReturn {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [webtorrent] = useState(() => new WebTorrent(WEBTORRENT_CONFIG));
   const [connectionStatus, setConnectionStatus] = useState("");
-  const [numberOfPeers, setNumberOfPeers] = useState(1);
   const [torrentBeingSent, setTorrentBeingSent] =
     useState<WebTorrent.Torrent | null>(null);
   const [transferSpeed, setTransferSpeed] = useState("0 kB/s");
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
+  const [showUsernameTakenDialog, setShowUsernameTakenDialog] = useState(false);
   const [downloadData, setDownloadData] = useState<{
     file: WebTorrent.File;
   } | null>(null);
+  const [peers, setPeers] = useState<string[]>([]);
+
+  const onUserConnected = (username: string) => {
+    setPeers((peers) => Array.from(new Set([...peers, username])));
+    setConnectionStatus("Connection established.");
+  };
 
   const onFileUploadComplete = () => {
     setConnectionStatus("File sent.");
@@ -130,21 +139,19 @@ export function useFileSharing({
   }, [webtorrent]);
 
   useEffect(() => {
-    if (!socket || !roomId) return;
+    if (!socket || !roomId || !username) return;
 
     const handleConnect = () => {
-      socket.emit("join-room", roomId, socket.id);
+      socket.emit("join-room", roomId, username, socket.id);
     };
 
-    const handleUserConnected = (userId: string) => {
-      setConnectionStatus("Connection established.");
-      setNumberOfPeers((peers) => peers + 1);
-      socket.emit("connection-established", userId);
+    const handleUserConnected = (username: string) => {
+      onUserConnected(username);
+      socket.emit("connection-established", username);
     };
 
-    const handleConnectionEstablished = () => {
-      setConnectionStatus("Connection established.");
-      setNumberOfPeers((peers) => peers + 1);
+    const handleConnectionEstablished = (username: string) => {
+      onUserConnected(username);
     };
 
     const handleFileLink = async (fileLink: string, senderId: string) => {
@@ -194,17 +201,21 @@ export function useFileSharing({
       onFileUploadComplete();
     };
 
-    const handleUserDisconnected = () => {
-      setNumberOfPeers((prevPeers) => {
-        const newPeerCount = prevPeers - 1;
-        if (newPeerCount === 1) {
-          reset();
-        }
-        return newPeerCount;
-      });
+    const handleUserDisconnected = (username: string) => {
+      const index = peers.indexOf(username);
+      if (peers.indexOf(username) > -1) {
+        peers.splice(index, 1);
+        setPeers([...peers]);
+      }
+      reset();
+    };
+
+    const handleUsernameTaken = () => {
+      setShowUsernameTakenDialog(true);
     };
 
     socket.on("connect", handleConnect);
+    socket.on("username-taken", handleUsernameTaken);
     socket.on("user-connected", handleUserConnected);
     socket.on("connection-established", handleConnectionEstablished);
     socket.on("file-link", handleFileLink);
@@ -213,22 +224,24 @@ export function useFileSharing({
 
     return () => {
       socket.off("connect", handleConnect);
+      socket.off("username-taken", handleUsernameTaken);
       socket.off("user-connected", handleUserConnected);
       socket.off("connection-established", handleConnectionEstablished);
       socket.off("file-link", handleFileLink);
       socket.off("done-downloading", handleDoneDownloading);
       socket.off("user-disconnected", handleUserDisconnected);
     };
-  }, [socket, roomId, numberOfPeers, webtorrent, reset]);
+  }, [socket, roomId, webtorrent, reset, username, peers]);
 
   return {
     connectionStatus,
-    numberOfPeers,
     transferSpeed,
     sendFile,
     showDownloadDialog,
     setShowDownloadDialog,
+    showUsernameTakenDialog,
     downloadData,
     handleDownload,
+    peers,
   };
 }

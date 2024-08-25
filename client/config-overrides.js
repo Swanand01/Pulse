@@ -6,6 +6,7 @@ module.exports = function override(config) {
     alias: {
       "@/components": resolve(__dirname, "src/components/"),
       "@/lib": resolve(__dirname, "src/lib/"),
+      "@/hooks": resolve(__dirname, "src/hooks/"),
     },
   };
 

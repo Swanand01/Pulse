@@ -20,7 +20,7 @@ const FEATURES = [
 
 export default function Features() {
   return (
-    <div className="flex flex-col sm:flex-row gap-4 px-8 prose prose-invert">
+    <div className="flex flex-col justify-center sm:flex-row gap-4 px-8 prose prose-invert h-[95vh] sm:h-fit sm:justify-start sm:items-center">
       {FEATURES.map(({ icon, heading, text }) => (
         <div className="flex flex-col max-w-80 gap-4" key={heading}>
           <div className="flex gap-2 items-center">

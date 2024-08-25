@@ -13,7 +13,7 @@ export default function Hero() {
   }
 
   return (
-    <div className="px-8 prose prose-invert flex flex-col gap-y-4">
+    <div className="px-8 prose prose-invert flex flex-col justify-center gap-y-4 h-[95vh] sm:h-fit">
       <h2 className="mb-0">Pulse: Next-Gen File Sharing, Fast and Free.</h2>
       <p className="mb-0">
         Instantly share files with anyone, anywhere, directly through your

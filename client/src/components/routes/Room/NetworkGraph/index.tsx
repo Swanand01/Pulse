@@ -91,7 +91,7 @@ const NetworkGraph: React.FC<NetworkGraphProps> = ({ users }) => {
   }, [reactFlowInstance, nodes]);
 
   return (
-    <div className="h-48 sm:h-64">
+    <div className="h-48 sm:h-64 sm:w-[500px]">
       <ReactFlow
         nodes={nodes}
         edges={edges}

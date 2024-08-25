@@ -9,7 +9,7 @@ export default function Hero() {
 
   let btnLink = `/${roomId}`;
   if (!username) {
-    btnLink = `/setup?roomId=${roomId}`;
+    btnLink = `/settings?roomId=${roomId}`;
   }
 
   return (

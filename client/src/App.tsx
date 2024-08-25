@@ -3,7 +3,8 @@ import Header from "@/components/ui/header";
 import Footer from "@/components/ui/footer";
 import Home from "./components/routes/Home";
 import Room from "./components/routes/Room";
-import Setup from "./components/routes/Setup";
+import Settings from "./components/routes/Settings";
+import { Toaster } from "./components/ui/toaster";
 
 function App() {
   return (
@@ -11,10 +12,11 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/setup" element={<Setup />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/:roomId" element={<Room />} />
       </Routes>
       <Footer />
+      <Toaster />
     </div>
   );
 }

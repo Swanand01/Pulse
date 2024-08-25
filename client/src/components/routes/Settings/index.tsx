@@ -7,14 +7,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-export default function Setup() {
+export default function Settings() {
   const [username, setUsername] = useLocalStorage("username", "");
   const [searchParams] = useSearchParams();
   const roomId = searchParams.get("roomId");
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,6 +31,8 @@ export default function Setup() {
 
     if (roomId) {
       navigate(`/${roomId}`, { replace: true });
+    } else {
+      toast({ title: "Settings saved." });
     }
   }
 

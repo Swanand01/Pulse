@@ -29,7 +29,7 @@ export default function Room() {
 
   useEffect(() => {
     if (!username) {
-      navigate(`/setup?roomId=${roomId}`);
+      navigate(`/settings?roomId=${roomId}`);
     }
   }, [navigate, roomId, username]);
 

@@ -38,7 +38,7 @@ export default function UsernameTakenDialog({
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => navigate(`/setup?roomId=${roomId}`)}
+            onClick={() => navigate(`/settings?roomId=${roomId}`)}
           >
             Continue
           </AlertDialogAction>

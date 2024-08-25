@@ -11,7 +11,7 @@ export default function UserNode({ data }: UserNodeProps) {
   const textLength = data.label.length;
   let sizeClass = "w-16 h-16";
 
-  if (textLength > 10 && textLength <= 16) {
+  if (textLength > 6 && textLength <= 16) {
     sizeClass = "w-24 h-24";
   } else if (textLength > 16) {
     sizeClass = "w-28 h-28";

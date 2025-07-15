@@ -34,6 +34,9 @@ npm run dev
 
 **Client:** React, Tailwind
 
+## Screenshots
+
+<img width="800" height="885" alt="image" src="https://github.com/user-attachments/assets/9f6b0c9d-4776-479a-a38f-d6f81527c6d9" />
 
 ## License
 

@@ -67,10 +67,13 @@ export function useFileSharing({
     [],
   );
 
-  const onDownloadingFile = useCallback((progress: number, downloadSpeed: string) => {
-    setConnectionStatus(`Receiving file: ${progress}%`);
-    setTransferSpeed(downloadSpeed);
-  }, []);
+  const onDownloadingFile = useCallback(
+    (progress: number, downloadSpeed: string) => {
+      setConnectionStatus(`Receiving file: ${progress}%`);
+      setTransferSpeed(downloadSpeed);
+    },
+    [],
+  );
 
   const reset = useCallback(() => {
     if (torrentBeingSent) {

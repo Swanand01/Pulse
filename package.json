@@ -2,14 +2,29 @@
   "name": "pulse",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/client",
+    "packages/server"
+  ],
   "scripts": {
-    "install": "npm install --prefix client && npm install --prefix server",
-    "dev": "concurrently \"npm start --prefix client\" \"npm run dev --prefix server\"",
-    "build": "npm run build --prefix client",
-    "start": "node server/index.js"
+    "dev": "concurrently \"npm run dev -w @pulse/client\" \"npm run dev -w @pulse/server\"",
+    "build": "npm run build -w @pulse/client && npm run build -w @pulse/server",
+    "start": "npm run start -w @pulse/server",
+    "lint": "eslint packages/",
+    "lint:fix": "eslint packages/ --fix",
+    "format": "prettier --write \"packages/**/*.{ts,tsx,json,css}\"",
+    "format:check": "prettier --check \"packages/**/*.{ts,tsx,json,css}\""
   },
   "devDependencies": {
-    "@types/d3": "^7.4.3",
-    "concurrently": "^8.2.2"
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "typescript-eslint": "^8.57.1"
   }
 }

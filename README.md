@@ -42,6 +42,10 @@ npm run dev
 
 **Infrastructure:** Cloudflare TURN for WebRTC relay
 
+## Screenshots
+
+![Pulse](pulse.png)
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)

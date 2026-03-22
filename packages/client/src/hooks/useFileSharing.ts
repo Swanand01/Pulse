@@ -188,7 +188,6 @@ export function useFileSharing({
     };
 
     const handleFileLink = async (fileLink: string, senderId: string) => {
-      console.log("file-link received, webtorrent ready:", !!webtorrent);
       if (!webtorrent) return;
       setConnectionStatus("Received magnet link.");
 

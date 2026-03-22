@@ -16,6 +16,11 @@ export default defineConfig({
         ws: true,
         secure: false,
       },
+      "/announce": {
+        target: "http://localhost:3001",
+        ws: true,
+        secure: false,
+      },
     },
   },
   resolve: {

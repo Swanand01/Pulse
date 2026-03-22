@@ -8,6 +8,16 @@ const require = createRequire(import.meta.url);
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    proxy: {
+      "/api": { target: "http://localhost:3001", secure: false },
+      "/socket.io": {
+        target: "http://localhost:3001",
+        ws: true,
+        secure: false,
+      },
+    },
+  },
   resolve: {
     alias: {
       "@/components": path.resolve(__dirname, "src/components"),

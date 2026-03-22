@@ -123,7 +123,6 @@ export default function Hero() {
       {/* Content — grows to fill space, centers itself */}
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center text-center gap-5 max-w-lg w-full">
         <span className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1 text-xs font-medium text-primary tracking-wide">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
           No uploads · No accounts · Just share
         </span>
 

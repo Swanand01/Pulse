@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import WebTorrent, { type Torrent, type TorrentFile } from "webtorrent";
 import { useToast } from "@/components/ui/use-toast";
-import { WEBTORRENT_CONFIG } from "@/lib/constants";
+import { TRACKERS } from "@/lib/constants";
 import { download, formatBytes } from "../lib/utils";
 
 interface UseFileSharingProps {
@@ -29,7 +29,7 @@ export function useFileSharing({
 }: UseFileSharingProps): UseFileSharingReturn {
   const { toast } = useToast();
   const socketRef = useRef<Socket | null>(null);
-  const [webtorrent] = useState(() => new WebTorrent(WEBTORRENT_CONFIG));
+  const [webtorrent, setWebtorrent] = useState<WebTorrent | null>(null);
   const [connectionStatus, setConnectionStatus] = useState("");
   const [torrentBeingSent, setTorrentBeingSent] = useState<Torrent | null>(
     null,
@@ -87,7 +87,7 @@ export function useFileSharing({
   const sendFile = useCallback(
     (fileToSend: File) => {
       const socket = socketRef.current;
-      if (!fileToSend || !socket) return;
+      if (!fileToSend || !socket || !webtorrent) return;
       reset();
       setConnectionStatus("Preparing to send.");
 
@@ -127,15 +127,30 @@ export function useFileSharing({
     }
   }, [downloadData]);
 
+  useEffect(() => {
+    fetch("/api/ice-servers")
+      .then((res) => res.json())
+      .then((data) => {
+        const wt = new WebTorrent({
+          tracker: {
+            announce: TRACKERS,
+            rtcConfig: { iceServers: data.iceServers },
+          },
+        });
+        setWebtorrent(wt);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch ICE servers, falling back:", err);
+        setWebtorrent(new WebTorrent({ tracker: { announce: TRACKERS } }));
+      });
+  }, []);
+
   const hasUsername = !!username;
 
   useEffect(() => {
     if (!hasUsername) return;
 
-    const SOCKET_URL =
-      process.env.NODE_ENV === "production"
-        ? window.location.origin
-        : "http://localhost:3001";
+    const SOCKET_URL = window.location.origin;
 
     joinedUsernameRef.current = null;
     const socket = io(SOCKET_URL);
@@ -148,6 +163,7 @@ export function useFileSharing({
   }, [hasUsername]);
 
   useEffect(() => {
+    if (!webtorrent) return;
     webtorrent.on("error", (error: Error) => {
       console.error("WebTorrent client error:", error);
     });
@@ -172,6 +188,7 @@ export function useFileSharing({
     };
 
     const handleFileLink = async (fileLink: string, senderId: string) => {
+      if (!webtorrent) return;
       setConnectionStatus("Received magnet link.");
 
       const existing = await webtorrent.get(fileLink);
@@ -279,7 +296,7 @@ export function useFileSharing({
     onUserConnected,
     setUsername,
     toast,
-  ]);
+  ]); // webtorrent kept in deps so handleFileLink closure stays fresh
 
   // Handle username changes: rename if already joined, rejoin if previous join was rejected
   useEffect(() => {

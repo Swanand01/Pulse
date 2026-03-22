@@ -1,42 +1,46 @@
 # Pulse
 
-Pulse is a file sharing web app that allows users to transfer files between multiple devices. It supports instant file sharing with multiple devices at once.
+Pulse is a peer-to-peer file sharing app that lets you transfer files between devices instantly — no login, no cloud storage, no intermediary.
 
-Pulse primarily uses WebTorrent to transfer files between multiple devices, and WebSockets to create temporary rooms. Files shared via WebTorrent are peer-to-peer(as they use WebRTC internally) which means there is direct transfer between the sender and receiver without any intermediate server. Do note that tracker servers in WebTorrent are used which carry metadata and facilitate the file transfer but do not get the complete file in any form.
-
+It uses WebTorrent for peer-to-peer transfers over WebRTC, and Socket.IO for signaling and room management. Files go directly browser-to-browser. Tracker servers carry metadata to facilitate the connection but never see the file contents.
 
 ## Features
 
-**Easy to Use**: No login or sign-up needed. Open the web app and start sharing instantly!
+- **No login required** — open the app and start sharing instantly
+- **Peer-to-peer** — files transfer directly between browsers, never stored on the server
+- **Cross-device** — works across any device with a modern browser
+- **Real-time** — see connected peers and transfer progress live
 
-**Secure**: Your files are transferred browser to browser and never stored on the server.
+## Try it
 
-**Anywhere**: Effortlessly share files across any device, no matter where you are in the world.
-
-
-## Try it!
-
-- Head over to the Pulse website [here.](https://pulse-zmn77.ondigitalocean.app/)
-- Share the link of the page to the other peer.
-- A connection will be established once the other peer opens the link.
-- Start sharing files!
+- Open the app and share the room link with the other person
+- A connection is established once they open the link
+- Drop a file to send
 
 ## Run locally
 
 ```bash
 npm install
+```
+
+Create `packages/server/.env`:
+
+```
+CLOUDFLARE_TURN_TOKEN_ID=your_token_id
+CLOUDFLARE_API_TOKEN=your_api_token
+```
+
+```bash
 npm run dev
 ```
 
 ## Tech Stack
 
-**Server:** Node, Express, SocketIO, WebTorrent
+**Client:** React 19, TypeScript, Vite, Tailwind CSS, WebTorrent, Socket.IO
 
-**Client:** React, Tailwind
+**Server:** Node, Express, TypeScript, Socket.IO
 
-## Screenshots
-
-<img width="800" height="885" alt="image" src="https://github.com/user-attachments/assets/9f6b0c9d-4776-479a-a38f-d6f81527c6d9" />
+**Infrastructure:** Cloudflare TURN for WebRTC relay
 
 ## License
 

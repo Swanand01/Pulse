@@ -29,11 +29,11 @@ export function useFileSharing({
 }: UseFileSharingProps): UseFileSharingReturn {
   const { toast } = useToast();
   const socketRef = useRef<Socket | null>(null);
-  const [webtorrent, setWebtorrent] = useState<WebTorrent | null>(null);
+  const [webtorrent, setWebtorrent] = useState<InstanceType<
+    typeof WebTorrent
+  > | null>(null);
   const [connectionStatus, setConnectionStatus] = useState("");
-  const [torrentBeingSent, setTorrentBeingSent] = useState<Torrent | null>(
-    null,
-  );
+  const torrentBeingSentRef = useRef<Torrent | null>(null);
   const [transferSpeed, setTransferSpeed] = useState("0 kB/s");
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [downloadData, setDownloadData] = useState<{
@@ -76,13 +76,13 @@ export function useFileSharing({
   );
 
   const reset = useCallback(() => {
-    if (torrentBeingSent) {
-      torrentBeingSent.destroy();
-      setTorrentBeingSent(null);
+    if (torrentBeingSentRef.current) {
+      torrentBeingSentRef.current.destroy();
+      torrentBeingSentRef.current = null;
     }
     setConnectionStatus("");
     setTransferSpeed("0 kB/s");
-  }, [torrentBeingSent]);
+  }, []);
 
   const sendFile = useCallback(
     (fileToSend: File) => {
@@ -92,9 +92,14 @@ export function useFileSharing({
       setConnectionStatus("Preparing to send.");
 
       webtorrent.seed(fileToSend, (torrent: Torrent) => {
-        setTorrentBeingSent(torrent);
+        torrentBeingSentRef.current = torrent;
 
         socket.emit("file-link", torrent.magnetURI, socket.id);
+        setConnectionStatus("Connecting to peer.");
+
+        torrent.on("wire", () => {
+          setConnectionStatus("Peer connected, starting transfer.");
+        });
 
         torrent.on("upload", () => {
           const progress = Math.round(
@@ -197,7 +202,11 @@ export function useFileSharing({
       }
 
       webtorrent.add(fileLink, (torrent: Torrent) => {
-        setTorrentBeingSent(torrent);
+        torrentBeingSentRef.current = torrent;
+
+        torrent.on("wire", () => {
+          setConnectionStatus("Connected to sender, starting download.");
+        });
 
         torrent.on("download", () => {
           const progress = Math.round(torrent.progress * 100);

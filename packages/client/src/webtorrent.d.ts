@@ -12,7 +12,10 @@ declare module "webtorrent" {
     downloadSpeed: number;
     progress: number;
     files: TorrentFile[];
-    on(event: "upload" | "download" | "done", listener: () => void): this;
+    on(
+      event: "upload" | "download" | "done" | "wire",
+      listener: () => void,
+    ): this;
     on(event: "error", listener: (err: Error) => void): this;
     destroy(): void;
   }

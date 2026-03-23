@@ -142,7 +142,10 @@ export function useFileSharing({
         const wt = new WebTorrent({
           tracker: {
             announce: TRACKERS,
-            rtcConfig: { iceServers: data.iceServers },
+            rtcConfig: {
+              iceServers: data.iceServers,
+              iceTransportPolicy: "relay",
+            },
           },
         });
         setWebtorrent(wt);

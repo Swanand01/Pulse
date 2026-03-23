@@ -93,7 +93,6 @@ export function useFileSharing({
 
       webtorrent.seed(fileToSend, (torrent: Torrent) => {
         torrentBeingSentRef.current = torrent;
-
         socket.emit("file-link", torrent.magnetURI, socket.id);
         setConnectionStatus("Connecting to peer.");
 
@@ -128,6 +127,10 @@ export function useFileSharing({
       const file = downloadData.file;
       const blob = await file.blob();
       download(blob, file.name);
+      if (torrentBeingSentRef.current) {
+        torrentBeingSentRef.current.destroy();
+        torrentBeingSentRef.current = null;
+      }
       setShowDownloadDialog(false);
     }
   }, [downloadData]);
@@ -204,10 +207,6 @@ export function useFileSharing({
       webtorrent.add(fileLink, (torrent: Torrent) => {
         torrentBeingSentRef.current = torrent;
 
-        torrent.on("wire", () => {
-          setConnectionStatus("Connected to sender, starting download.");
-        });
-
         torrent.on("download", () => {
           const progress = Math.round(torrent.progress * 100);
           const downloadSpeed = `${formatBytes(torrent.downloadSpeed)}/s`;
@@ -242,6 +241,10 @@ export function useFileSharing({
 
     const handleDoneDownloading = () => {
       onFileUploadComplete();
+      if (torrentBeingSentRef.current) {
+        torrentBeingSentRef.current.destroy();
+        torrentBeingSentRef.current = null;
+      }
     };
 
     const handleUserDisconnected = (username: string) => {

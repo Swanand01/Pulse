@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/ws": "^8.18.1",
     "express": "^4.22.1",
+    "express-rate-limit": "^8.3.1",
     "socket.io": "^4.8.3",
     "ws": "^8.18.3"
   },

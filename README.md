@@ -28,6 +28,7 @@ Create `packages/server/.env`:
 ```
 CLOUDFLARE_TURN_TOKEN_ID=your_token_id
 CLOUDFLARE_API_TOKEN=your_api_token
+WEB_APP_URL=http://localhost:5173
 ```
 
 ```bash
